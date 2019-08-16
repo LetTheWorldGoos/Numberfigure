@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index:MNIST test</title>
+</head>
+
+
+<body bgcolor="#FFFF99">
+<!--link to file submit and answer page-->
+     <h1> Here to Upload the Number Picture:</h1>
+     <form method = 'POST' enctype = multipart/form-data action = "http://localhost:5000/upload">
+          <input type = "file"  name = "file" />
+         <input type = "submit" />
+     </form>
+
+     <h2> </h2>
+<!--link to drawboard-->
+     <h1> Here to Write the Picture:</h1>
+     <form action = "http://localhost:5000/upload2">
+        <button type="submit">Continue</button>
+     </form>
+</body>
+</html>

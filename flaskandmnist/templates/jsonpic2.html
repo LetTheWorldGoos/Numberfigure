@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drawboard</title>
+	<script src="/static/jquery.min.js"></script>
+</head>
+
+
+<body bgcolor="#FF9966">
+    <h1>Here to Draw the number:</h1>
+    <canvas id="canvas">
+    </canvas>
+	<button type = "submit" id = "save">upload</button>
+
+<!--
+    <hr>
+	<img src="" alt="" id="img">
+-->
+    <p id="result">hello</p>
+
+</body>
+</html>
+
+<script type = "text/javascript">
+// set the drawboard by canvas
+    //  get canvas settings
+    let canvas = document.getElementById('canvas');
+
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#000000';
+
+    // size setting
+    ctx.setLineDash([]);
+    canvas.setAttribute('height', 500 + 'px');
+    canvas.setAttribute('width', 500 + 'px');
+
+    //  set original positions
+    let startP = {x: 0, y: 0};
+    let endP = {x: 0, y: 0};
+	
+	// set the background as white and set the position of the drawboard
+    ctx.fillStyle = "rgb(255,255,255)";
+    ctx.fillRect(0,0,500,500);
+
+    //  add MOUSEDOWN: start writing
+    canvas.addEventListener('mousedown', mousedown);
+
+    //  add MOUSEUP: end writing
+    canvas.addEventListener('mouseup', mouseup);
+
+
+    function mousedown(e) {
+        //  the start point is the mouse position
+        startP = {x:e.clientX,y:e.clientY};
+
+        //  focus on the start point as beginning
+        ctx.moveTo(startP.x, startP.y);
+        console.log('Mouse down.');
+        canvas.addEventListener('mousemove', mousemove);
+    }
+
+    function mouseup(e) {
+        console.log('Mouse up.');
+        canvas.removeEventListener('mousemove', mousemove);
+    }
+
+	function mouseout(e) {
+		console.log('Mouse out.');
+		canvas.removeEventListener('mousemove', mousemove);
+	}
+    // make continuous lines
+    function mousemove(e) {
+        ctx.beginPath();
+        ctx.moveTo(startP.x, startP.y);
+
+        //  set end position of every step
+        endP = {x:e.clientX,y:e.clientY};
+        console.log(JSON.stringify(startP) + ',' + JSON.stringify(endP));
+
+        //  focus on the end position of steps
+        ctx.lineTo(endP.x, endP.y);
+
+        //  print on the position
+        ctx.stroke();
+        ctx.lineWidth = 40;
+
+        //  get another step(every point as a step to connect to a line)
+        startP = endP;
+        ctx.moveTo(startP.x, startP.y);
+	}
+// set drawboard over
+	
+	
+// the ajax works for two process:	
+// 1. return a json string from canvas drawboard to flask
+// 2. get the status from flask and turn to another page with data 
+	let save = $('#save');
+    save.on('click', function() {
+//		console.log('heyhere'); okay
+//
+////		test for return		
+//      	var fullQuality = canvas.toDataURL('image/jpeg', 1.0);
+//      	console.log(fullQuality);
+//      	let img = $('#img');
+//      	img.attr('src', fullQuality);
+//
+//      	return // check; update dom
+	
+		let picc = canvas.toDataURL("image/jpeg",1.0);
+		console.log(picc)
+        let data = {filedata: picc};
+//		alert(picc); okay
+		
+// if there's '$ not defined' error, check the js file in static folder
+		$.ajax({   
+			type: 'POST',
+			url: '/upload3',
+			data: data,
+			dataType: 'json',
+			contentType: "application/json;charset=UTF-8",
+			async:false,
+			success: function(data){
+				// here is for the second process:
+                if (data.status === 'success') {
+                    console.log(data);
+                    let result = $('#result');
+                    window.location.href = `/result?data=${data.data}`;
+                }
+            },
+			error: function(data) {console.log('error')}
+		});
+	}
+	)
+</script>
+
+<style>
+    #canvas {
+        background-color: white;
+        position:absolute;
+    }
+    #save {
+        position: absolute;
+        left: 550px;
+        top:600px;
+    }
+/*
+    #img {
+        position: absolute;
+        left: 10px;
+        top: 720px;
+    }
+*/
+</style>
+

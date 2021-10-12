@@ -65,7 +65,7 @@ numpy==1.17.0
 oauth==1.0.1
 oauthlib==2.0.6
 olefile==0.45.1
-opencv-python==4.1.0.25
+opencv-python==4.2.0.32
 pandas==0.25.0
 pbr==1.9.1
 pexpect==4.2.1
